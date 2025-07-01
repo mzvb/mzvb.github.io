@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Markdown Viewer</title>
+
+  <!-- 样式和库 -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
@@ -11,6 +13,7 @@
   <script src="https://cdn.jsdelivr.net/npm/markdown-it-anchor/dist/markdown-it-anchor.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/markdown-it-table-of-contents/dist/markdown-it-table-of-contents.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+
   <style>
     body {
       display: flex;
@@ -77,8 +80,10 @@
           div.innerHTML = block.textContent;
           block.parentNode.replaceWith(div);
         });
-        mermaid.initialize({ startOnLoad: false });
-        mermaid.init(undefined, document.querySelectorAll(".mermaid"));
+
+        // 初始化 Mermaid 图表
+        mermaid.initialize({ startOnLoad: true });
+        mermaid.contentLoaded();  // 确保 Mermaid 图表渲染完成
       })
       .catch(err => {
         document.getElementById("content").innerHTML =
