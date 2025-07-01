@@ -4,7 +4,9 @@ name: Python脚本更新结构化Markdown文件列表到JSON
 on:
   push:
     branches:
-      - main # 当有代码推送到 main 分支时触发
+      - master # 当有代码推送到 main 分支时触发
+    paths:
+      - 'pages/**' # 仅当 'pages/' 目录下的任何文件发生变化时触发
 
 jobs:
   update_md_list:
