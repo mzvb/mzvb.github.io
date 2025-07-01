@@ -46,6 +46,7 @@
 <body>
   <nav id="toc"></nav>
   <main id="content" class="markdown-body"></main>
+  <div id="loading" style="text-align: center; font-size: 20px;">Loading...</div>
 
   <script>
     const md = window.markdownit({ html: true })
@@ -58,7 +59,7 @@
 
     const params = new URLSearchParams(location.search);
     const filename = params.get("p") || "Welcome file.md";  // 默认文件
-    const filepath = "p/" + filename;               // 加前缀目录路径
+    const filepath = "p/" + filename;  // 加前缀目录路径
 
     fetch(filepath)
       .then(res => {
@@ -66,12 +67,15 @@
         return res.text();
       })
       .then(text => {
-        const html = md.render(text);
-        document.getElementById("content").innerHTML = html;
+        document.getElementById("loading").style.display = "none";  // Hide loading indicator
 
         // 生成 TOC
         const tocHTML = md.render("[toc]");
         document.getElementById("toc").innerHTML = tocHTML;
+
+        // 渲染正文内容
+        const html = md.render(text);
+        document.getElementById("content").innerHTML = html;
 
         // Mermaid 渲染
         document.querySelectorAll("code.language-mermaid").forEach(block => {
@@ -84,6 +88,7 @@
         mermaid.init(undefined, document.querySelectorAll(".mermaid"));
       })
       .catch(err => {
+        document.getElementById("loading").style.display = "none";  // Hide loading indicator on error
         document.getElementById("content").innerHTML =
           `<p style="color: red;">加载失败: ${err.message}</p>`;
       });
