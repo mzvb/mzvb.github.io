@@ -6,7 +6,7 @@ on:
     branches:
       - master # 当有代码推送到 main 分支时触发
     paths:
-      - 'pages/**' # 仅当 'pages/' 目录下的任何文件发生变化时触发
+      - 'p/**' # 仅当 'pages/' 目录下的任何文件发生变化时触发
 permissions:
   contents: write # 授予对仓库内容的写入权限
   
