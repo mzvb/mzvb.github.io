@@ -57,11 +57,12 @@
       });
 
     const params = new URLSearchParams(location.search);
-    const file = params.get("p") || "test.md"; // 默认文件
+    const filename = params.get("p") || "test.md";  // 默认文件
+    const filepath = "p/" + filename;               // 加前缀目录路径
 
-    fetch(file)
+    fetch(filepath)
       .then(res => {
-        if (!res.ok) throw new Error("加载失败: " + file);
+        if (!res.ok) throw new Error("加载失败: " + filepath);
         return res.text();
       })
       .then(text => {
