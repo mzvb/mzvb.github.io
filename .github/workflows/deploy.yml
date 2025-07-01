@@ -3,32 +3,52 @@ name: Deploy Blog
 on:
   push:
     branches:
-      - master  # 只在 main 分支发生变化时触发
+      - master  # 只在 master 分支发生变化时触发
     paths:
       - 'p/*'
       - 'lib/update_list.py'
       - 'index.html'
+      - 'list.json'  # 监控 list.json 文件变化
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
+      # 1. Checkout the repository
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      # 2. Set up Python environment
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
           python-version: '3.x'
 
+      # 3. Install dependencies (if any)
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install markdown
 
+      # 4. Run Python script to update list.json
       - name: Run update_list.py
         run: python lib/update_list.py
 
+      # 5. Configure Git for actions
+      - name: Configure git
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+      # 6. Commit and push the changes (if any)
+      - name: Commit and push changes
+        run: |
+          git add list.json  # 添加 list.json 到暂存区
+          git commit -m "Update list.json" || echo "No changes to commit"  # 如果有更改则提交
+          git push origin master  # 将更改推送到 master 分支
+
+      # 7. Deploy to GitHub Pages
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
