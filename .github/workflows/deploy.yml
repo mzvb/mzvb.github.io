@@ -9,7 +9,9 @@ on:
       - 'lib/update_list.py'
       - 'index.html'
       - 'list.json'  # 监控 list.json 文件变化
-
+permissions:
+  contents: write # 授予对仓库内容的写权限
+  
 jobs:
   build:
     runs-on: ubuntu-latest
