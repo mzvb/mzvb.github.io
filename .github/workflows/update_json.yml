@@ -1,0 +1,38 @@
+---
+name: Python脚本更新结构化Markdown文件列表到JSON
+
+on:
+  push:
+    branches:
+      - main # 当有代码推送到 main 分支时触发
+
+jobs:
+  update_md_list:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 配置 Git 用户
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+
+      - name: 设置 Python 环境
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x' # 使用最新的 Python 3 版本
+
+      - name: 运行 Python 脚本更新 list.json
+        # 从仓库根目录执行脚本，需要指定脚本的相对路径
+        run: python lib/update_md_list.py 
+
+      - name: 提交并推送更改 (如果 list.json 有变化)
+        run: |
+          git add list.json # list.json 假设在仓库根目录
+          # 检查是否有实际的更改，避免空提交
+          git diff --staged --quiet || git commit -m "chore: 自动更新 'pages' 文件夹中最新 Markdown 文件到 list.json"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # GitHub 提供的内置 token
