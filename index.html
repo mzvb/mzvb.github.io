@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Markdown Blog</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown.min.css" />
+  <style>
+    body {
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+    .container {
+      max-width: 900px;
+      width: 100%;
+    }
+    h1 {
+      text-align: center;
+    }
+    #file-list {
+      list-style-type: none;
+      padding: 0;
+    }
+    #file-list li {
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Markdown Blog</h1>
+    <ul id="file-list">
+      <!-- List will be populated by JS -->
+    </ul>
+  </div>
+
+  <script>
+    fetch('list.json')
+      .then(res => res.json())
+      .then(files => {
+        const listContainer = document.getElementById('file-list');
+        files.forEach(file => {
+          const li = document.createElement('li');
+          li.innerHTML = `<a href="p/index.html?p=${file[0]}">${file[0]}</a> - ${file[1]}`;
+          listContainer.appendChild(li);
+        });
+      })
+      .catch(err => console.error('Error loading file list:', err));
+  </script>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Markdown Viewer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- 样式和库 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/markdown-it-katex@3.0.1/dist/markdown-it-katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/markdown-it-anchor/dist/markdown-it-anchor.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/markdown-it-table-of-contents/dist/markdown-it-table-of-contents.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+
+  <style>
+    body {
+      display: flex;
+      margin: 0;
+      font-family: sans-serif;
+    }
+    #toc {
+      width: 250px;
+      padding: 1rem;
+      border-right: 1px solid #ccc;
+      overflow-y: auto;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      background: #f9f9f9;
+    }
+    #content {
+      padding: 2rem;
+      flex: 1;
+    }
+    .markdown-body {
+      max-width: 800px;
+    }
+    .mermaid {
+      background: white;
+      padding: 1em;
+    }
+  </style>
+</head>
+<body>
+  <nav id="toc"></nav>
+  <main id="content" class="markdown-body"></main>
+  <div id="loading" style="text-align: center; font-size: 20px;">Loading...</div>
+
+  <script>
+    const md = window.markdownit({ html: true })
+      .use(window.markdownitKatex)
+      .use(window.markdownitAnchor)
+      .use(window.markdownitTableOfContents, {
+        includeLevel: [1, 2, 3],
+        containerClass: 'table-of-contents'
+      });
+
+    const params = new URLSearchParams(location.search);
+    const filename = params.get("p") || "Welcome file.md";  // 默认文件
+    const filepath = "p/" + filename;  // 加前缀目录路径
+
+    fetch(filepath)
+      .then(res => {
+        if (!res.ok) throw new Error("加载失败: " + filepath);
+        return res.text();
+      })
+      .then(text => {
+        document.getElementById("loading").style.display = "none";  // Hide loading indicator
+
+        // 生成 TOC
+        const tocHTML = md.render("[toc]");
+        document.getElementById("toc").innerHTML = tocHTML;
+
+        // 渲染正文内容
+        const html = md.render(text);
+        document.getElementById("content").innerHTML = html;
+
+        // Mermaid 渲染
+        document.querySelectorAll("code.language-mermaid").forEach(block => {
+          const div = document.createElement("div");
+          div.className = "mermaid";
+          div.innerHTML = block.textContent;
+          block.parentNode.replaceWith(div);
+        });
+        mermaid.initialize({ startOnLoad: false });
+        mermaid.init(undefined, document.querySelectorAll(".mermaid"));
+      })
+      .catch(err => {
+        document.getElementById("loading").style.display = "none";  // Hide loading indicator on error
+        document.getElementById("content").innerHTML =
+          `<p style="color: red;">加载失败: ${err.message}</p>`;
+      });
+  </script>
+</body>
+</html>
