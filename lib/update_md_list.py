@@ -9,7 +9,7 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 # 仓库的根目录 (假设脚本在 lib 目录下，那么根目录就是 lib 的上一级)
 REPO_ROOT = os.path.join(SCRIPT_DIR, '..')
 # pages 目录的绝对路径
-PAGES_DIR_ABS = os.path.join(REPO_ROOT, 'pages')
+PAGES_DIR_ABS = os.path.join(REPO_ROOT, 'p')
 # list.json 文件的绝对路径 (假设它在仓库根目录)
 LIST_JSON_PATH_ABS = os.path.join(REPO_ROOT, 'list.json')
 
