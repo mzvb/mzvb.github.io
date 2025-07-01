@@ -57,7 +57,7 @@
       });
 
     const params = new URLSearchParams(location.search);
-    const filename = params.get("p") || "test.md";  // 默认文件
+    const filename = params.get("p") || "Welcome file.md";  // 默认文件
     const filepath = "p/" + filename;               // 加前缀目录路径
 
     fetch(filepath)
