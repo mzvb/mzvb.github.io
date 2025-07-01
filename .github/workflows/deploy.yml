@@ -3,7 +3,7 @@ name: Deploy Blog
 on:
   push:
     branches:
-      - main  # 只在 main 分支发生变化时触发
+      - master  # 只在 main 分支发生变化时触发
     paths:
       - 'p/*'
       - 'lib/update_list.py'
