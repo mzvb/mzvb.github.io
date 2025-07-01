@@ -30,7 +30,7 @@ jobs:
         uses: actions/checkout@v4
       - name: update json
         run: |
-          echo ${ls -t ./*.md}
+          echo "File name:" {ls -t ./*.md}
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Build with Jekyll
