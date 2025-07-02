@@ -187,14 +187,15 @@
 
     /* ✅ 移动端样式优化 */
     @media (max-width: 768px) {
-  body {
-    flex-direction: column;
-    overflow-x: hidden; /* ✅ 禁止横向滚动 */
-  }
-
   html, body {
     max-width: 100%;
-    overflow-x: hidden; /* ✅ 双重保险 */
+    overflow-x: hidden; /* 禁止横向滚动 */
+  }
+
+  body {
+    flex-direction: column;
+    padding: 0;
+    margin: 0;
   }
 
   aside#toc {
@@ -202,41 +203,67 @@
   }
 
   main#main {
-    margin: 4rem 1rem 1rem 1rem;
+    margin: 3.5rem 0.5rem 0.5rem 0.5rem;
     order: 1;
-    font-size: 0.95rem; /* ✅ 文字略缩小 */
+    padding: 0.5rem;
+    font-size: 0.94rem;
   }
 
   aside#related {
     width: 100%;
-    margin: 1rem 0;
-    padding: 1rem;
+    margin: 0.5rem 0;
+    padding: 0.75rem;
     order: 2;
     border-radius: 0;
     box-shadow: none;
-    font-size: 0.95rem; /* ✅ 同样缩小文字 */
+    font-size: 0.94rem;
   }
 
+  /* 缩小 ul / li 缩进和字体 */
   #toc ul,
   #archive-list ul {
-    padding-left: 0.5rem !important; /* ✅ 缩小缩进 */
+    padding-left: 0.5rem !important;
+    margin: 0;
   }
 
   #toc li,
   #archive-list li {
-    padding-left: 0.5rem !important; /* ✅ 缩小缩进 */
-    font-size: 0.85rem !important;   /* ✅ 更小字体 */
+    padding-left: 0.5rem !important;
+    font-size: 0.85rem !important;
+    margin: 0.1rem 0;
   }
 
   .archive-month {
     padding-left: 0.5rem !important;
     font-size: 0.9rem !important;
+    margin: 0.4rem 0 0.2rem;
   }
 
   .markdown-body {
     font-size: 0.95rem;
+    line-height: 1.5;
+    padding: 0;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    margin: 0.5rem 0;
+  }
+
+  ul, ol {
+    margin: 0.3rem 0 0.3rem 1rem;
+    padding-left: 1rem;
+  }
+
+  li {
+    margin: 0.2rem 0;
   }
 }
+
   </style>
 </head>
 <body>
