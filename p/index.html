@@ -140,25 +140,12 @@
     }
 
     /* 返回顶部按钮 */
-    #toc-toggle {
-      position: fixed;
-      bottom: 20px;
-      right: 80px;  /* 与返回顶部按钮水平对齐 */
-      background: #0366d6;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      font-size: 14px;
-      padding: 8px 12px;
-      cursor: pointer;
-      display: none;
-      z-index: 1001;
-    }
     
     #top-btn {
       position: fixed;
-      bottom: 20px;
-      left: 20px;
+      bottom: 240px;
+      right: 20px;
+      width: 60px;
       padding: 8px 12px;
       background: #0366d6;
       color: white;
@@ -180,6 +167,7 @@
     /* 移动端样式 */
     @media (max-width: 768px) {
       header#site-header nav {
+        justify-content: space-evenly;
         gap: 1rem;
       }
   
@@ -189,9 +177,19 @@
         margin: 0;
       }
       #toc-toggle {
+        position: fixed;
+        background: #0366d6;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 14px;
+        padding: 8px 12px;
+        cursor: pointer;
+        z-index: 1001;
         display: block;
         position: fixed;
         left: 20px;
+        bottom: 240px;
         width: 60px; /* 调整宽度，使其不遮挡内容 */
       }
       aside#toc {
@@ -260,7 +258,7 @@
 <body>
   <header id="site-header">
     <nav>
-      <a href="../index.html">🏠 Home</a>
+      <a href="../index.html">🏠 主页</a>
       <a href="../index.html">📚 博客</a>
       <a href="../other.html">🧩 其他</a>
       <a href="../about.html">ℹ️ 关于</a>
@@ -409,7 +407,17 @@
         document.getElementById("archive-list").innerHTML = `<p>归档加载失败</p>`;
       }
     }
+    // 获取返回顶部按钮
+    const topBtn = document.getElementById("top-btn");
 
+    // 监听滚动事件，根据滚动距离显示/隐藏按钮
+    window.onscroll = function() {
+      if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+        topBtn.style.display = "block"; // 显示按钮
+      } else {
+        topBtn.style.display = "none"; // 隐藏按钮
+      }
+    };
     document.getElementById("toc-toggle").addEventListener("click", function() {
       const toc = document.getElementById("toc");
       toc.style.display = toc.style.display === "block" ? "none" : "block";
