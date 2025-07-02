@@ -5,8 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Markdown 阅读器</title>
 
+  <!-- 样式库 -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@5.1.0/github-markdown.min.css">
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+  <!-- 数学公式 -->
   <script>
     window.MathJax = {
       tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
@@ -14,6 +17,8 @@
     };
   </script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+
+  <!-- Mermaid 支持 -->
   <script type="module">
     import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
     mermaid.initialize({ startOnLoad: false });
@@ -26,17 +31,48 @@
       margin: 0;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       display: flex;
-      flex-wrap: nowrap; /* 保持横向布局 */
+      flex-wrap: nowrap;
       min-height: 100vh;
       background: #f9f9f9;
     }
 
-    aside, main { overflow-y: auto; }
+    header#site-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: #fff;
+      padding: 0.8rem 1.5rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      z-index: 1000;
+      border-bottom: 1px solid #eee;
+    }
+
+    header#site-header nav {
+      display: flex;
+      gap: 1.5rem;
+      font-size: 1rem;
+      font-weight: 500;
+    }
+
+    header#site-header a {
+      color: #0366d6;
+      text-decoration: none;
+    }
+
+    header#site-header a:hover {
+      color: #d6336c;
+    }
+
+    main, aside {
+      margin-top: 4rem; /* 避免被header遮挡 */
+      overflow-y: auto;
+    }
 
     #toc, #related {
-      flex: 0 0 20rem; /* 新增：禁止被缩放 */
-      min-width: 20rem; /* 确保最小宽度 */
-      width: 20rem;
+      flex: 0 0 30rem;
+      min-width: 30rem;
+      width: 30rem;
       background: #fff;
       border-radius: 10px;
       box-shadow: 0 0 6px rgba(0,0,0,0.1);
@@ -47,7 +83,6 @@
       flex-direction: column;
     }
 
-
     #main {
       flex: 1 1 auto;
       padding: 1rem;
@@ -57,9 +92,7 @@
     .markdown-body {
       max-width: 100%;
       background: none !important;
-      max-width: 100%;
-      background: none !important;
-      word-break: break-word;     
+      word-break: break-word;
       white-space: normal;
       overflow-wrap: anywhere;
     }
@@ -86,8 +119,9 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    .markdown-body li p{
-      word-break: break-word;     
+
+    .markdown-body li p {
+      word-break: break-word;
       white-space: normal;
       overflow-wrap: anywhere;
     }
@@ -164,6 +198,7 @@
       }
       #toc, #related {
         width: auto;
+        min-width: unset;
         max-width: 100%;
         margin: 0.5rem;
       }
@@ -174,23 +209,38 @@
   </style>
 </head>
 <body>
+  <!-- ✅ 顶部导航 -->
+  <header id="site-header">
+    <nav>
+      <a href="../index.html">🏠 Home</a>
+      <a href="../index.html">📚 博客</a>
+      <a href="../other.html">🧩 其他</a>
+      <a href="../about.html">ℹ️ 关于</a>
+    </nav>
+  </header>
+
+  <!-- 左侧目录 -->
   <aside id="toc">
     <h2>目录</h2>
     <ul id="toc-list"></ul>
   </aside>
 
+  <!-- 主内容 -->
   <main id="main">
     <article id="output" class="markdown-body"></article>
   </main>
 
+  <!-- 右侧归档 -->
   <aside id="related">
     <a class="home-link" href="../index.html">← 返回主页</a>
     <h2>归档</h2>
     <div id="archive-list"></div>
   </aside>
 
+  <!-- 返回顶部按钮 -->
   <button id="top-btn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">↑ 返回顶部</button>
 
+  <!-- 主脚本 -->
   <script>
     const params = new URLSearchParams(location.search);
     const filename = decodeURIComponent(params.get("p") || "test.md");
@@ -284,7 +334,7 @@
 
         const groups = {};
         list.forEach(([name, time]) => {
-          const month = time.slice(0, 7); // yyyy-mm
+          const month = time.slice(0, 7);
           if (!groups[month]) groups[month] = [];
           groups[month].push(name);
         });
