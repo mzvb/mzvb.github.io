@@ -59,6 +59,12 @@
       color: #d6336c;
     }
 
+    /* 图片居中 */
+    .markdown-body img {
+      display: block;
+      margin: 0 auto;
+    }
+
     aside#toc {
       position: fixed;
       top: 4rem;
@@ -97,29 +103,21 @@
       word-break: break-word;
       overflow-wrap: anywhere;
     }
-    .mermaid {
-      background: white;
-      padding: 1em;
-      margin-bottom: 1em;
-    }
 
-    #toc ul,
-    #archive-list ul {
+    #toc ul, #archive-list ul {
       list-style: none;
       padding-left: 1rem;
       margin: 0;
     }
 
-    #toc li,
-    #archive-list li {
+    #toc li, #archive-list li {
       margin: 0.15rem 0;
       font-size: 0.9rem;
       position: relative;
       padding-left: 1rem;
     }
 
-    #toc li::before,
-    #archive-list li::before {
+    #toc li::before, #archive-list li::before {
       content: "▸";
       position: absolute;
       left: 0;
@@ -127,8 +125,7 @@
       font-size: 0.8rem;
     }
 
-    #toc a,
-    #archive-list a {
+    #toc a, #archive-list a {
       color: #0366d6;
       text-decoration: none;
       display: block;
@@ -142,32 +139,7 @@
       color: #d6336c;
     }
 
-    .archive-month {
-      cursor: pointer;
-      font-weight: bold;
-      font-size: 0.95rem;
-      margin: 0.5rem 0 0.3rem;
-      position: relative;
-      padding-left: 1rem;
-    }
-
-    .archive-month::before {
-      content: "▼";
-      position: absolute;
-      left: 0;
-      font-size: 0.7rem;
-      color: #aaa;
-      transition: transform 0.2s;
-    }
-
-    .archive-month.collapsed::before {
-      transform: rotate(-90deg);
-    }
-
-    .archive-group ul.collapsed {
-      display: none;
-    }
-
+    /* 返回顶部按钮 */
     #top-btn {
       position: fixed;
       bottom: 20px;
@@ -184,84 +156,74 @@
       z-index: 1001;
     }
 
-    /* ✅ 移动端样式优化 */
+    /* 移动端样式 */
     @media (max-width: 768px) {
-  html, body {
-    max-width: 100%;
-    overflow-x: hidden; /* 禁止横向滚动 */
-  }
+      header#site-header nav {
+        gap: 1rem;
+      }
 
-  body {
-    flex-direction: column;
-    padding: 0;
-    margin: 0;
-  }
+      body {
+        flex-direction: column;
+        padding: 0;
+        margin: 0;
+      }
 
-  aside#toc {
-    display: none;
-  }
+      aside#toc {
+        display: none; /* 隐藏目录 */
+      }
 
-  main#main {
-    margin: 3.5rem 0.5rem 0.5rem 0.5rem;
-    order: 1;
-    padding: 0.5rem;
-    font-size: 0.94rem;
-  }
+      main#main {
+        margin: 3.5rem 0.5rem 0.5rem 0.5rem;
+        order: 1;
+        padding: 0.5rem;
+        font-size: 0.94rem;
+      }
 
-  aside#related {
-    width: 100%;
-    margin: 0.5rem 0;
-    padding: 0.75rem;
-    order: 2;
-    border-radius: 0;
-    box-shadow: none;
-    font-size: 0.94rem;
-  }
-  .markdown-body ol, .markdown-body ul{padding-left:0}
-  /* 缩小 ul / li 缩进和字体 */
-  #toc ul,
-  #archive-list ul {
-    padding-left: 0.5rem !important;
-    margin: 0;
-  }
+      aside#related {
+        width: 100%;
+        margin: 0.5rem 0;
+        padding: 0.75rem;
+        order: 2;
+        border-radius: 0;
+        box-shadow: none;
+        font-size: 0.94rem;
+      }
 
-  #toc li,
-  #archive-list li {
-    padding-left: 0.5rem !important;
-    font-size: 0.85rem !important;
-    margin: 0.1rem 0;
-  }
+      /* 缩小 ul / li 缩进和字体 */
+      #toc ul, #archive-list ul {
+        padding-left: 0.5rem !important;
+        margin: 0;
+      }
 
-  .archive-month {
-    padding-left: 0.5rem !important;
-    font-size: 0.9rem !important;
-    margin: 0.4rem 0 0.2rem;
-  }
+      #toc li, #archive-list li {
+        padding-left: 0.5rem !important;
+        font-size: 0.85rem !important;
+        margin: 0.1rem 0;
+      }
 
-  .markdown-body {
-    font-size: 0.8rem;
-    line-height: 1.5;
-    padding: 0;
-  }
+      .archive-month {
+        padding-left: 0.5rem !important;
+        font-size: 0.9rem !important;
+        margin: 0.4rem 0 0.2rem;
+      }
 
-  h1, h2, h3, h4, h5, h6 {
-    margin-top: 1rem;
-    margin-bottom: 0.5rem;
-  }
+      .markdown-body {
+        font-size: 0.8rem;
+        line-height: 1.5;
+        padding: 0;
+      }
 
-  p {
-    margin: 0.5rem 0;
-  }
-
-  ul, ol {
-    margin: 0.3rem 0 0.3rem 1rem;
-    padding-left: 1rem;
-  }
-
-  li {
-    margin: 0.2rem 0;
-  }
-}
+      /* 控制目录按钮 */
+      #toc-toggle {
+        display: block;
+        cursor: pointer;
+        padding: 0.5rem;
+        background: #0366d6;
+        color: white;
+        border: none;
+        border-radius: 6px;
+      }
+    }
 
   </style>
 </head>
@@ -272,6 +234,7 @@
       <a href="../index.html">📚 博客</a>
       <a href="../other.html">🧩 其他</a>
       <a href="../about.html">ℹ️ 关于</a>
+      <button id="toc-toggle">☰ 目录</button>
     </nav>
   </header>
 
@@ -417,9 +380,17 @@
       }
     }
 
-    window.addEventListener("scroll", () => {
-      const btn = document.getElementById("top-btn");
-      btn.style.display = window.scrollY > 300 ? "block" : "none";
+    document.getElementById("toc-toggle").addEventListener("click", function() {
+      const toc = document.getElementById("toc");
+      toc.style.display = toc.style.display === "block" ? "none" : "block";
+    });
+
+    window.addEventListener("click", function(event) {
+      const toc = document.getElementById("toc");
+      const tocToggle = document.getElementById("toc-toggle");
+      if (!toc.contains(event.target) && event.target !== tocToggle) {
+        toc.style.display = "none";
+      }
     });
 
     renderMarkdownFromFile(filename);
