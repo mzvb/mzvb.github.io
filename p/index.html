@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@5.1.0/github-markdown.min.css">
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
-  <!-- MathJax 支持 -->
+  <!-- 数学公式 -->
   <script>
     window.MathJax = {
       tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
@@ -26,14 +26,29 @@
   </script>
 
   <style>
+    :root {
+      --bg-color: #f9f9f9;
+      --text-color: #000;
+      --link-color: #0366d6;
+      --hover-color: #d6336c;
+      --card-bg: #fff;
+    }
+    body.dark {
+      --bg-color: #1e1e1e;
+      --text-color: #ddd;
+      --link-color: #58a6ff;
+      --hover-color: #ff79c6;
+      --card-bg: #2b2b2b;
+    }
+
     * { box-sizing: border-box; }
     body {
       margin: 0;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       display: flex;
-      flex-wrap: nowrap;
       min-height: 100vh;
-      background: #f9f9f9;
+      background: var(--bg-color);
+      color: var(--text-color);
     }
 
     header#site-header {
@@ -41,7 +56,7 @@
       top: 0;
       left: 0;
       width: 100%;
-      background: #fff;
+      background: var(--card-bg);
       padding: 0.8rem 1.5rem;
       box-shadow: 0 2px 6px rgba(0,0,0,0.05);
       z-index: 1000;
@@ -56,60 +71,43 @@
     }
 
     header#site-header a {
-      color: #0366d6;
+      color: var(--link-color);
       text-decoration: none;
     }
 
     header#site-header a:hover {
-      color: #d6336c;
-    }
-
-    main, aside {
-      padding-top: 4rem;
-      overflow-y: auto;
-    }
-
-    #toc-wrapper {
-      position: fixed;
-      top: 0;
-      left: -100%;
-      width: 80%;
-      max-width: 20rem;
-      height: 100%;
-      background: #fff;
-      box-shadow: 2px 0 6px rgba(0,0,0,0.2);
-      z-index: 1050;
-      transition: left 0.3s ease;
-    }
-
-    #toc-wrapper.active {
-      left: 0;
+      color: var(--hover-color);
     }
 
     #toc {
-      padding-top: 4rem;
-      padding: 1rem;
-      height: 100%;
-    }
-
-    #related {
       flex: 0 0 20rem;
       min-width: 20rem;
-      width: 20rem;
-      background: #fff;
+      background: var(--card-bg);
       border-radius: 10px;
       box-shadow: 0 0 6px rgba(0,0,0,0.1);
       margin: 0.5rem;
       padding: 1rem;
       height: fit-content;
-      display: flex;
-      flex-direction: column;
+      overflow-y: auto;
+      margin-top: 4rem;
     }
 
     #main {
       flex: 1 1 auto;
       padding: 1rem;
-      background: transparent;
+      margin-top: 4rem;
+    }
+
+    #related {
+      flex: 0 0 20rem;
+      min-width: 20rem;
+      background: var(--card-bg);
+      border-radius: 10px;
+      box-shadow: 0 0 6px rgba(0,0,0,0.1);
+      margin: 0.5rem;
+      padding: 1rem;
+      height: fit-content;
+      margin-top: 4rem;
     }
 
     .markdown-body {
@@ -118,60 +116,23 @@
       word-break: break-word;
       white-space: normal;
       overflow-wrap: anywhere;
-    }
-
-    .mermaid {
-      background: white;
-      padding: 1em;
-      margin-bottom: 1em;
-    }
-
-    h2 {
-      font-size: 1.1rem;
-      margin-top: 0;
-    }
-
-    ul {
-      list-style: none;
-      padding-left: 0;
-    }
-
-    li {
-      margin: 0.3rem 0;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .markdown-body li p {
-      word-break: break-word;
-      white-space: normal;
-      overflow-wrap: anywhere;
+      color: var(--text-color);
     }
 
     a {
-      text-decoration: none;
-      color: #0366d6;
+      color: var(--link-color);
     }
-
     a:hover {
-      text-decoration: underline;
+      color: var(--hover-color);
     }
 
-    #toc ul ul {
-      margin-left: 1em;
-      border-left: 1px dotted #ccc;
-      padding-left: 0.5em;
-    }
-
-    .archive-month {
-      cursor: pointer;
-      user-select: none;
+    #toc a.active {
+      font-weight: bold;
+      color: var(--hover-color);
     }
 
     .archive-month::before {
       content: "▼ ";
-      display: inline-block;
       transition: transform 0.2s ease;
     }
 
@@ -179,61 +140,48 @@
       transform: rotate(-90deg);
     }
 
-    .archive-group ul {
-      padding-left: 1rem;
-      margin: 0.2rem 0;
-    }
-
     .archive-group ul.collapsed {
       display: none;
     }
 
-    #toc a.active {
-      font-weight: bold;
-      color: #d6336c;
+    .mermaid {
+      background: var(--card-bg);
+      padding: 1em;
+      margin-bottom: 1em;
+    }
+
+    #top-btn, #toc-btn, #dark-btn {
+      position: fixed;
+      bottom: 20px;
+      padding: 8px 12px;
+      font-size: 14px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      z-index: 1001;
     }
 
     #top-btn {
-      position: fixed;
-      bottom: 20px;
       right: 20px;
-      padding: 8px 12px;
-      background: #0366d6;
+      background: var(--link-color);
       color: white;
-      border: none;
-      border-radius: 6px;
-      font-size: 14px;
-      cursor: pointer;
       display: none;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
 
-    #toc-toggle-btn {
-      display: none;
-      position: fixed;
-      top: 1rem;
-      left: 1rem;
-      z-index: 1100;
-      background: #0366d6;
+    #toc-btn {
+      left: 20px;
+      background: var(--link-color);
       color: white;
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 6px;
-      font-size: 1rem;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-    }
-
-    #toc-overlay {
       display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.3);
-      z-index: 1040;
     }
 
-    #toc-overlay.active {
-      display: block;
+    #dark-btn {
+      right: 20px;
+      top: 70px;
+      bottom: unset;
+      background: #555;
+      color: white;
     }
 
     @media (max-width: 768px) {
@@ -241,8 +189,17 @@
         flex-direction: column;
       }
 
-      #toc-toggle-btn {
-        display: block;
+      #toc {
+        display: none;
+        position: fixed;
+        top: 4rem;
+        left: 0;
+        background: var(--card-bg);
+        z-index: 999;
+        width: 80%;
+        height: calc(100% - 4rem);
+        overflow-y: auto;
+        box-shadow: 2px 0 6px rgba(0, 0, 0, 0.1);
       }
 
       #related {
@@ -251,14 +208,14 @@
         max-width: 100%;
         margin: 0.5rem;
       }
+
+      #toc-btn {
+        display: block;
+      }
     }
   </style>
 </head>
 <body>
-  <!-- ☰ 目录按钮（移动端） -->
-  <button id="toc-toggle-btn">☰ 目录</button>
-  <div id="toc-overlay"></div>
-
   <!-- 顶部导航 -->
   <header id="site-header">
     <nav>
@@ -269,33 +226,32 @@
     </nav>
   </header>
 
-  <!-- 左侧目录（移动端呼出式） -->
-  <div id="toc-wrapper">
-    <aside id="toc">
-      <h2>目录</h2>
-      <ul id="toc-list"></ul>
-    </aside>
-  </div>
+  <!-- 目录 -->
+  <aside id="toc">
+    <h2>目录</h2>
+    <ul id="toc-list"></ul>
+  </aside>
 
-  <!-- 主内容区域 -->
+  <!-- 内容 -->
   <main id="main">
     <article id="output" class="markdown-body"></article>
   </main>
 
-  <!-- 右侧归档 -->
+  <!-- 归档 -->
   <aside id="related">
     <h2>归档</h2>
     <div id="archive-list"></div>
   </aside>
 
-  <!-- 返回顶部按钮 -->
+  <!-- 控件按钮 -->
   <button id="top-btn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">↑ 返回顶部</button>
+  <button id="toc-btn">📖 目录</button>
+  <button id="dark-btn">🌙 暗</button>
 
-  <!-- 主脚本 -->
+  <!-- 脚本逻辑 -->
   <script>
     const params = new URLSearchParams(location.search);
     const filename = decodeURIComponent(params.get("p") || "test.md");
-    const filepath = filename;
 
     async function renderMarkdownFromFile(filePath) {
       const res = await fetch(filePath);
@@ -368,9 +324,7 @@
         let current = null;
         for (const [header, link] of headerMap) {
           const top = header.getBoundingClientRect().top;
-          if (top < 100) {
-            current = link;
-          }
+          if (top < 100) current = link;
         }
 
         tocLinks.forEach(link => link.classList.remove("active"));
@@ -381,8 +335,7 @@
     async function loadArchiveList() {
       try {
         const res = await fetch("../list.json");
-        let list = await res.json();
-
+        const list = await res.json();
         const groups = {};
         list.forEach(([name, time]) => {
           const month = time.slice(0, 7);
@@ -404,7 +357,7 @@
           const ul = document.createElement("ul");
           files.forEach(name => {
             const li = document.createElement("li");
-            li.innerHTML = `<a href="index.html?p=${encodeURIComponent(name)}" title="${name}">${name}</a>`;
+            li.innerHTML = `<a href="index.html?p=${encodeURIComponent(name)}">${name}</a>`;
             ul.appendChild(li);
           });
 
@@ -422,28 +375,26 @@
       }
     }
 
-    // 返回顶部按钮显示
+    // 控制按钮状态
     window.addEventListener("scroll", () => {
-      const btn = document.getElementById("top-btn");
-      btn.style.display = window.scrollY > 300 ? "block" : "none";
+      document.getElementById("top-btn").style.display = window.scrollY > 300 ? "block" : "none";
     });
 
-    // 移动端目录呼出逻辑
-    const tocToggleBtn = document.getElementById("toc-toggle-btn");
-    const tocWrapper = document.getElementById("toc-wrapper");
-    const tocOverlay = document.getElementById("toc-overlay");
+    document.getElementById("toc-btn").onclick = () => {
+      const toc = document.getElementById("toc");
+      toc.style.display = toc.style.display === "block" ? "none" : "block";
+    };
 
-    tocToggleBtn.addEventListener("click", () => {
-      tocWrapper.classList.add("active");
-      tocOverlay.classList.add("active");
-    });
+    document.getElementById("dark-btn").onclick = () => {
+      document.body.classList.toggle("dark");
+      localStorage.setItem("theme", document.body.classList.contains("dark") ? "dark" : "light");
+    };
 
-    tocOverlay.addEventListener("click", () => {
-      tocWrapper.classList.remove("active");
-      tocOverlay.classList.remove("active");
-    });
+    if (localStorage.getItem("theme") === "dark") {
+      document.body.classList.add("dark");
+    }
 
-    renderMarkdownFromFile(filepath);
+    renderMarkdownFromFile(filename);
     loadArchiveList();
   </script>
 </body>
