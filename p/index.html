@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Markdown 阅读器</title>
 
-  <!-- 样式与依赖 -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@5.1.0/github-markdown.min.css">
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script>
@@ -22,9 +21,7 @@
   </script>
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
     body {
       margin: 0;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -34,33 +31,30 @@
       background: #f9f9f9;
     }
 
-    aside, main {
-      padding: 1rem;
-      overflow-y: auto;
-    }
+    aside, main { overflow-y: auto; }
 
-    /* 卡片样式 */
     #toc, #related {
-      width: 17%;
-      min-width: 200px;
-      max-width: 260px;
+      width: 15rem;
       background: #fff;
       border-radius: 10px;
       box-shadow: 0 0 6px rgba(0,0,0,0.1);
-      margin: 1rem;
+      margin: 0.5rem;
+      padding: 1rem;
       height: fit-content;
-      max-height: calc(100vh - 2rem);
+      max-height: calc(100vh - 1rem);
       display: flex;
       flex-direction: column;
     }
 
     #main {
-      flex: 1 1 66%;
-      padding: 1rem 2rem;
+      flex: 1 1 auto;
+      padding: 1rem;
+      background: transparent;
     }
 
     .markdown-body {
       max-width: 100%;
+      background: none !important;
     }
 
     .mermaid {
@@ -81,6 +75,9 @@
 
     li {
       margin: 0.3rem 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     a {
@@ -92,18 +89,10 @@
       text-decoration: underline;
     }
 
-    /* 树状 TOC 缩进 */
     #toc ul ul {
       margin-left: 1em;
       border-left: 1px dotted #ccc;
       padding-left: 0.5em;
-    }
-
-    /* 文章列表中文件名省略 */
-    #related li {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
     }
 
     .home-link {
@@ -113,7 +102,35 @@
       font-size: 0.95rem;
     }
 
-    /* 返回顶部按钮 */
+    .archive-month {
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .archive-month::before {
+      content: "▼ ";
+      display: inline-block;
+      transition: transform 0.2s ease;
+    }
+
+    .archive-month.collapsed::before {
+      transform: rotate(-90deg);
+    }
+
+    .archive-group ul {
+      padding-left: 1rem;
+      margin: 0.2rem 0;
+    }
+
+    .archive-group ul.collapsed {
+      display: none;
+    }
+
+    #toc a.active {
+      font-weight: bold;
+      color: #d6336c;
+    }
+
     #top-btn {
       position: fixed;
       bottom: 20px;
@@ -129,7 +146,6 @@
       box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
 
-    /* 响应式 */
     @media (max-width: 768px) {
       body {
         flex-direction: column;
@@ -137,7 +153,7 @@
       #toc, #related {
         width: auto;
         max-width: 100%;
-        margin: 1rem;
+        margin: 0.5rem;
       }
       #main {
         padding: 1rem;
@@ -157,11 +173,10 @@
 
   <aside id="related">
     <a class="home-link" href="../index.html">← 返回主页</a>
-    <h2>最近文章</h2>
-    <ul id="related-list"></ul>
+    <h2>归档</h2>
+    <div id="archive-list"></div>
   </aside>
 
-  <!-- 返回顶部按钮 -->
   <button id="top-btn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">↑ 返回顶部</button>
 
   <script>
@@ -190,6 +205,7 @@
 
       const headers = output.querySelectorAll("h1, h2, h3");
       buildTocTree(headers);
+      setupTocActive(headers);
 
       for (let block of mermaidBlocks) {
         try {
@@ -228,36 +244,78 @@
       });
     }
 
-    async function loadRelatedList() {
+    function setupTocActive(headers) {
+      const tocLinks = Array.from(document.querySelectorAll("#toc a"));
+      const headerMap = tocLinks.map(link => {
+        const id = link.getAttribute("href").slice(1);
+        return [document.getElementById(id), link];
+      });
+
+      window.addEventListener("scroll", () => {
+        let current = null;
+        for (const [header, link] of headerMap) {
+          const top = header.getBoundingClientRect().top;
+          if (top < 100) {
+            current = link;
+          }
+        }
+
+        tocLinks.forEach(link => link.classList.remove("active"));
+        if (current) current.classList.add("active");
+      });
+    }
+
+    async function loadArchiveList() {
       try {
         const res = await fetch("../list.json");
         let list = await res.json();
-        list = list.slice(0, 10);
-        const ul = document.getElementById("related-list");
-        ul.innerHTML = "";
 
-        list.forEach(([name, date]) => {
-          const li = document.createElement("li");
-          li.innerHTML = `<a href="index.html?p=${encodeURIComponent(name)}">${name}</a><br><small>${date}</small>`;
-          ul.appendChild(li);
+        const groups = {};
+        list.forEach(([name, time]) => {
+          const month = time.slice(0, 7); // yyyy-mm
+          if (!groups[month]) groups[month] = [];
+          groups[month].push(name);
+        });
+
+        const container = document.getElementById("archive-list");
+        container.innerHTML = "";
+
+        Object.entries(groups).reverse().forEach(([month, files]) => {
+          const group = document.createElement("div");
+          group.className = "archive-group";
+
+          const monthDiv = document.createElement("div");
+          monthDiv.className = "archive-month";
+          monthDiv.textContent = `📁 ${month}`;
+
+          const ul = document.createElement("ul");
+          files.forEach(name => {
+            const li = document.createElement("li");
+            li.innerHTML = `<a href="index.html?p=${encodeURIComponent(name)}" title="${name}">${name}</a>`;
+            ul.appendChild(li);
+          });
+
+          monthDiv.addEventListener("click", () => {
+            ul.classList.toggle("collapsed");
+            monthDiv.classList.toggle("collapsed");
+          });
+
+          group.appendChild(monthDiv);
+          group.appendChild(ul);
+          container.appendChild(group);
         });
       } catch (err) {
-        document.getElementById("related-list").innerHTML = `<li>无法加载文章列表</li>`;
+        document.getElementById("archive-list").innerHTML = `<p>归档加载失败</p>`;
       }
     }
 
-    // 显示返回顶部按钮
     window.addEventListener("scroll", () => {
       const btn = document.getElementById("top-btn");
-      if (window.scrollY > 300) {
-        btn.style.display = "block";
-      } else {
-        btn.style.display = "none";
-      }
+      btn.style.display = window.scrollY > 300 ? "block" : "none";
     });
 
     renderMarkdownFromFile(filepath);
-    loadRelatedList();
+    loadArchiveList();
   </script>
 </body>
 </html>
