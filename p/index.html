@@ -185,22 +185,33 @@
       z-index: 1001;
     }
 
+    /* ✅ 移动端样式优化 */
     @media (max-width: 768px) {
+      body {
+        flex-direction: column;
+      }
+
       aside#toc {
         display: none;
       }
+
       main#main {
         margin: 4rem 1rem 1rem 1rem;
+        order: 1;
       }
+
       aside#related {
-        width: auto;
-        margin: 1rem;
+        width: 100%;
+        margin: 1rem 0;
+        padding: 1rem;
+        order: 2;
+        border-radius: 0;
+        box-shadow: none;
       }
     }
   </style>
 </head>
 <body>
-  <!-- 顶部导航 -->
   <header id="site-header">
     <nav>
       <a href="../index.html">🏠 Home</a>
@@ -210,24 +221,20 @@
     </nav>
   </header>
 
-  <!-- 左侧目录 -->
   <aside id="toc">
     <h2>目录</h2>
     <ul id="toc-list"></ul>
   </aside>
 
-  <!-- 主内容 -->
   <main id="main">
     <article id="output" class="markdown-body"></article>
   </main>
 
-  <!-- 右侧归档 -->
   <aside id="related">
     <h2>归档</h2>
     <div id="archive-list"></div>
   </aside>
 
-  <!-- 返回顶部 -->
   <button id="top-btn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">↑ 返回顶部</button>
 
   <script>
@@ -366,3 +373,4 @@
   </script>
 </body>
 </html>
+
