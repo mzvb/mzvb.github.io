@@ -34,6 +34,8 @@
     aside, main { overflow-y: auto; }
 
     #toc, #related {
+      flex: 0 0 30rem; /* 新增：禁止被缩放 */
+      min-width: 30rem; /* 确保最小宽度 */
       width: 30rem;
       background: #fff;
       border-radius: 10px;
@@ -44,6 +46,7 @@
       display: flex;
       flex-direction: column;
     }
+
 
     #main {
       flex: 1 1 auto;
