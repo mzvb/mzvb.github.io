@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -22,50 +22,32 @@
   </script>
 
   <style>
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
     body {
       margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       display: flex;
-      height: 100vh;
-      font-family: sans-serif;
+      flex-direction: row;
+      min-height: 100vh;
+    }
+    aside, main {
+      padding: 1rem;
+      overflow-y: auto;
     }
     #toc, #related {
       width: 250px;
-      background: #f3f3f3;
-      padding: 1rem;
-      overflow-y: auto;
+      background: #f7f7f7;
       border-right: 1px solid #ddd;
     }
     #related {
+      border-right: none;
       border-left: 1px solid #ddd;
-    }
-    #toc h2, #related h2 {
-      font-size: 1.2rem;
-      margin-top: 0;
-    }
-    #toc ul, #related ul {
-      list-style: none;
-      padding-left: 0;
-    }
-    #toc li, #related li {
-      margin: 0.3rem 0;
-    }
-    #toc a, #related a {
-      text-decoration: none;
-      color: #007acc;
-    }
-    #toc a:hover, #related a:hover {
-      text-decoration: underline;
-    }
-    #toc ul ul {
-      margin-left: 1em;
-      border-left: 1px dotted #ccc;
-      padding-left: 0.5em;
     }
     #main {
       flex: 1;
       padding: 1rem 2rem;
-      overflow-y: auto;
     }
     .markdown-body {
       max-width: 800px;
@@ -74,6 +56,50 @@
       background: white;
       padding: 1em;
       margin-bottom: 1em;
+    }
+    h2 {
+      font-size: 1.1rem;
+      margin-top: 0;
+    }
+    ul {
+      list-style: none;
+      padding-left: 0;
+    }
+    li {
+      margin: 0.3rem 0;
+    }
+    a {
+      text-decoration: none;
+      color: #0366d6;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    #toc ul ul {
+      margin-left: 1em;
+      border-left: 1px dotted #ccc;
+      padding-left: 0.5em;
+    }
+    .home-link {
+      display: block;
+      margin-bottom: 1rem;
+      font-weight: bold;
+      font-size: 0.95rem;
+    }
+
+    /* 响应式布局 */
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column;
+      }
+      #toc, #related {
+        width: 100%;
+        border: none;
+        border-top: 1px solid #ddd;
+      }
+      #main {
+        padding: 1rem;
+      }
     }
   </style>
 </head>
@@ -88,14 +114,15 @@
   </main>
 
   <aside id="related">
+    <a class="home-link" href="../index.html">← 返回主页</a>
     <h2>最近文章</h2>
     <ul id="related-list"></ul>
   </aside>
 
   <script>
     const params = new URLSearchParams(location.search);
-    const filename = decodeURIComponent(params.get("p") || "test.md");  // 默认文件
-    const filepath = filename;  // 不加前缀
+    const filename = decodeURIComponent(params.get("p") || "test.md");
+    const filepath = filename;
 
     async function renderMarkdownFromFile(filePath) {
       const res = await fetch(filePath);
@@ -106,7 +133,6 @@
 
       const raw = await res.text();
 
-      // 提取 mermaid 块
       const mermaidRegex = /```mermaid\n([\s\S]*?)```/g;
       let mermaidBlocks = [];
       let preprocessed = raw.replace(mermaidRegex, (_, code) => {
@@ -121,7 +147,6 @@
       const headers = output.querySelectorAll("h1, h2, h3");
       buildTocTree(headers);
 
-      // Mermaid 渲染
       for (let block of mermaidBlocks) {
         try {
           await mermaid.run({ nodes: [document.getElementById(block.id)] });
@@ -130,7 +155,6 @@
         }
       }
 
-      // MathJax 渲染
       MathJax.typesetPromise();
     }
 
@@ -140,7 +164,7 @@
       let stack = [{ level: 0, ul: container }];
 
       headers.forEach((header, i) => {
-        const level = parseInt(header.tagName[1]); // 1 ~ 6
+        const level = parseInt(header.tagName[1]);
         const id = `heading-${i}`;
         header.id = id;
 
@@ -165,7 +189,7 @@
       try {
         const res = await fetch("../list.json");
         let list = await res.json();
-        list = list.slice(0, 10);  // 只保留前10条
+        list = list.slice(0, 10);
 
         const ul = document.getElementById("related-list");
         ul.innerHTML = "";
