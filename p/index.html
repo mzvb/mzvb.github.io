@@ -158,7 +158,7 @@
     #top-btn {
       position: fixed;
       bottom: 20px;
-      right: 20px;
+      left: 20px;
       padding: 8px 12px;
       background: #0366d6;
       color: white;
@@ -265,7 +265,6 @@
       <a href="../index.html">📚 博客</a>
       <a href="../other.html">🧩 其他</a>
       <a href="../about.html">ℹ️ 关于</a>
-      <button id="toc-toggle">☰ 目录</button>
     </nav>
   </header>
 
@@ -282,8 +281,9 @@
     <h2>归档</h2>
     <div id="archive-list"></div>
   </aside>
-
-  <button id="top-btn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">↑ 返回顶部</button>
+  
+  <button id="toc-toggle">☰</button>
+  <button id="top-btn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">↑</button>
 
   <script>
     const params = new URLSearchParams(location.search);
