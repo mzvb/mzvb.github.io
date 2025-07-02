@@ -187,28 +187,56 @@
 
     /* ✅ 移动端样式优化 */
     @media (max-width: 768px) {
-      body {
-        flex-direction: column;
-      }
+  body {
+    flex-direction: column;
+    overflow-x: hidden; /* ✅ 禁止横向滚动 */
+  }
 
-      aside#toc {
-        display: none;
-      }
+  html, body {
+    max-width: 100%;
+    overflow-x: hidden; /* ✅ 双重保险 */
+  }
 
-      main#main {
-        margin: 4rem 1rem 1rem 1rem;
-        order: 1;
-      }
+  aside#toc {
+    display: none;
+  }
 
-      aside#related {
-        width: 100%;
-        margin: 1rem 0;
-        padding: 1rem;
-        order: 2;
-        border-radius: 0;
-        box-shadow: none;
-      }
-    }
+  main#main {
+    margin: 4rem 1rem 1rem 1rem;
+    order: 1;
+    font-size: 0.95rem; /* ✅ 文字略缩小 */
+  }
+
+  aside#related {
+    width: 100%;
+    margin: 1rem 0;
+    padding: 1rem;
+    order: 2;
+    border-radius: 0;
+    box-shadow: none;
+    font-size: 0.95rem; /* ✅ 同样缩小文字 */
+  }
+
+  #toc ul,
+  #archive-list ul {
+    padding-left: 0.5rem !important; /* ✅ 缩小缩进 */
+  }
+
+  #toc li,
+  #archive-list li {
+    padding-left: 0.5rem !important; /* ✅ 缩小缩进 */
+    font-size: 0.85rem !important;   /* ✅ 更小字体 */
+  }
+
+  .archive-month {
+    padding-left: 0.5rem !important;
+    font-size: 0.9rem !important;
+  }
+
+  .markdown-body {
+    font-size: 0.95rem;
+  }
+}
   </style>
 </head>
 <body>
