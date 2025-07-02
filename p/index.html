@@ -182,10 +182,10 @@
   <!-- 脚本逻辑 -->
   <script>
     const params = new URLSearchParams(location.search);
-    const filename = decodeURIComponent(params.get("p") || "test.md");
+    const filename = decodeURIComponent(params.get("p") || "init.md");
 
     async function renderMarkdownFromFile(filePath) {
-      const res = await fetch("p/" + filePath);
+      const res = await fetch("./" + filePath);
       if (!res.ok) {
         document.getElementById("output").innerHTML = `<p style="color:red;">加载失败: ${filePath}</p>`;
         return;
