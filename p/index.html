@@ -2,37 +2,65 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Markdown Viewer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Markdown 阅读器</title>
 
-  <!-- 样式和库 -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown.min.css" />
-  <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/markdown-it-katex@3.0.1/dist/markdown-it-katex.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/markdown-it-anchor/dist/markdown-it-anchor.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/markdown-it-table-of-contents/dist/markdown-it-table-of-contents.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <!-- 样式与依赖 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@5.1.0/github-markdown.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({ startOnLoad: false });
+    window.mermaid = mermaid;
+  </script>
 
   <style>
+    * { box-sizing: border-box; }
     body {
-      display: flex;
       margin: 0;
+      display: flex;
+      height: 100vh;
       font-family: sans-serif;
     }
-    #toc {
+    #toc, #related {
       width: 250px;
+      background: #f3f3f3;
       padding: 1rem;
-      border-right: 1px solid #ccc;
       overflow-y: auto;
-      position: sticky;
-      top: 0;
-      height: 100vh;
-      background: #f9f9f9;
+      border-right: 1px solid #ddd;
     }
-    #content {
-      padding: 2rem;
+    #related {
+      border-left: 1px solid #ddd;
+    }
+    #toc h2, #related h2 {
+      font-size: 1.2rem;
+      margin-top: 0;
+    }
+    #toc ul, #related ul {
+      list-style: none;
+      padding-left: 0;
+    }
+    #toc li, #related li {
+      margin: 0.3rem 0;
+    }
+    #toc a, #related a {
+      text-decoration: none;
+      color: #007acc;
+    }
+    #toc a:hover, #related a:hover {
+      text-decoration: underline;
+    }
+    #main {
       flex: 1;
+      padding: 1rem 2rem;
+      overflow-y: auto;
     }
     .markdown-body {
       max-width: 800px;
@@ -40,55 +68,95 @@
     .mermaid {
       background: white;
       padding: 1em;
+      margin-bottom: 1em;
     }
   </style>
 </head>
 <body>
-  <nav id="toc"></nav>
-  <main id="content" class="markdown-body"></main>
+  <aside id="toc">
+    <h2>目录</h2>
+    <ul id="toc-list"></ul>
+  </aside>
+
+  <main id="main">
+    <article id="output" class="markdown-body"></article>
+  </main>
+
+  <aside id="related">
+    <h2>文章列表</h2>
+    <ul id="related-list"></ul>
+  </aside>
 
   <script>
-    const md = window.markdownit({ html: true })
-      .use(window.markdownitKatex)
-      .use(window.markdownitAnchor)
-      .use(window.markdownitTableOfContents, {
-        includeLevel: [1, 2, 3],
-        containerClass: 'table-of-contents'
-      });
-
     const params = new URLSearchParams(location.search);
-    const filename = params.get("p") || "Welcome file.md";  // 默认文件
-    const filepath = "p/" + filename;  // 加前缀目录路径
+    const filename = params.get("p") || "test.md";  // 默认文件
+    const filepath = filename.includes("/") ? filename : `p/${filename}`;
 
-    fetch(filepath)
-      .then(res => {
-        if (!res.ok) throw new Error("加载失败: " + filepath);
-        return res.text();
-      })
-      .then(text => {
-        const html = md.render(text);
-        document.getElementById("content").innerHTML = html;
+    async function renderMarkdownFromFile(filePath) {
+      const res = await fetch(filePath);
+      if (!res.ok) {
+        document.getElementById("output").innerHTML = `<p style="color:red;">加载失败: ${filePath}</p>`;
+        return;
+      }
 
-        // 生成 TOC
-        const tocHTML = md.render("[toc]");
-        document.getElementById("toc").innerHTML = tocHTML;
+      const raw = await res.text();
 
-        // Mermaid 渲染
-        document.querySelectorAll("code.language-mermaid").forEach(block => {
-          const div = document.createElement("div");
-          div.className = "mermaid";
-          div.innerHTML = block.textContent;
-          block.parentNode.replaceWith(div);
-        });
-
-        // 初始化 Mermaid 图表
-        mermaid.initialize({ startOnLoad: true });
-        mermaid.contentLoaded();  // 确保 Mermaid 图表渲染完成
-      })
-      .catch(err => {
-        document.getElementById("content").innerHTML =
-          `<p style="color: red;">加载失败: ${err.message}</p>`;
+      // 提取 mermaid 块
+      const mermaidRegex = /```mermaid\n([\s\S]*?)```/g;
+      let mermaidBlocks = [];
+      let preprocessed = raw.replace(mermaidRegex, (_, code) => {
+        const id = `mermaid-${mermaidBlocks.length}`;
+        mermaidBlocks.push({ id, code });
+        return `<div class="mermaid" id="${id}">${code}</div>`;
       });
+
+      const output = document.getElementById("output");
+      output.innerHTML = marked.parse(preprocessed);
+
+      // 自动目录生成
+      const toc = document.getElementById("toc-list");
+      toc.innerHTML = "";
+      const headers = output.querySelectorAll("h1, h2, h3");
+      headers.forEach((header, i) => {
+        const id = `heading-${i}`;
+        header.id = id;
+        const li = document.createElement("li");
+        li.style.marginLeft = `${(parseInt(header.tagName[1]) - 1) * 10}px`;
+        li.innerHTML = `<a href="#${id}">${header.innerText}</a>`;
+        toc.appendChild(li);
+      });
+
+      // Mermaid 渲染
+      for (let block of mermaidBlocks) {
+        try {
+          await mermaid.run({ nodes: [document.getElementById(block.id)] });
+        } catch (e) {
+          console.error("Mermaid render error:", e);
+        }
+      }
+
+      // MathJax 渲染
+      MathJax.typesetPromise();
+    }
+
+    async function loadRelatedList() {
+      try {
+        const res = await fetch("../list.json");
+        const list = await res.json();
+
+        const ul = document.getElementById("related-list");
+        list.forEach(([name, date]) => {
+          const li = document.createElement("li");
+          li.innerHTML = `<a href="index.html?p=${name}">${name}</a><br><small>${date}</small>`;
+          ul.appendChild(li);
+        });
+      } catch (err) {
+        document.getElementById("related-list").innerHTML = `<li>无法加载文章列表</li>`;
+      }
+    }
+
+    renderMarkdownFromFile(filepath);
+    loadRelatedList();
   </script>
 </body>
 </html>
