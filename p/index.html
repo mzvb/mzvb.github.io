@@ -57,6 +57,11 @@
     #toc a:hover, #related a:hover {
       text-decoration: underline;
     }
+    #toc ul ul {
+      margin-left: 1em;
+      border-left: 1px dotted #ccc;
+      padding-left: 0.5em;
+    }
     #main {
       flex: 1;
       padding: 1rem 2rem;
@@ -83,14 +88,14 @@
   </main>
 
   <aside id="related">
-    <h2>文章列表</h2>
+    <h2>最近文章</h2>
     <ul id="related-list"></ul>
   </aside>
 
   <script>
     const params = new URLSearchParams(location.search);
-    const filename = params.get("p") || "index.md";  // 默认文件
-    const filepath = filename;
+    const filename = decodeURIComponent(params.get("p") || "test.md");  // 默认文件
+    const filepath = filename;  // 不加前缀
 
     async function renderMarkdownFromFile(filePath) {
       const res = await fetch(filePath);
@@ -113,18 +118,8 @@
       const output = document.getElementById("output");
       output.innerHTML = marked.parse(preprocessed);
 
-      // 自动目录生成
-      const toc = document.getElementById("toc-list");
-      toc.innerHTML = "";
       const headers = output.querySelectorAll("h1, h2, h3");
-      headers.forEach((header, i) => {
-        const id = `heading-${i}`;
-        header.id = id;
-        const li = document.createElement("li");
-        li.style.marginLeft = `${(parseInt(header.tagName[1]) - 1) * 10}px`;
-        li.innerHTML = `<a href="#${id}">${header.innerText}</a>`;
-        toc.appendChild(li);
-      });
+      buildTocTree(headers);
 
       // Mermaid 渲染
       for (let block of mermaidBlocks) {
@@ -139,15 +134,45 @@
       MathJax.typesetPromise();
     }
 
+    function buildTocTree(headers) {
+      const container = document.getElementById("toc-list");
+      container.innerHTML = "";
+      let stack = [{ level: 0, ul: container }];
+
+      headers.forEach((header, i) => {
+        const level = parseInt(header.tagName[1]); // 1 ~ 6
+        const id = `heading-${i}`;
+        header.id = id;
+
+        const li = document.createElement("li");
+        li.innerHTML = `<a href="#${id}">${header.innerText}</a>`;
+
+        while (stack.length > 0 && stack[stack.length - 1].level >= level) {
+          stack.pop();
+        }
+
+        let parentUl = stack[stack.length - 1].ul;
+
+        let ul = document.createElement("ul");
+        li.appendChild(ul);
+        parentUl.appendChild(li);
+
+        stack.push({ level, ul });
+      });
+    }
+
     async function loadRelatedList() {
       try {
         const res = await fetch("../list.json");
-        const list = await res.json();
+        let list = await res.json();
+        list = list.slice(0, 10);  // 只保留前10条
 
         const ul = document.getElementById("related-list");
+        ul.innerHTML = "";
+
         list.forEach(([name, date]) => {
           const li = document.createElement("li");
-          li.innerHTML = `<a href="index.html?p=${name}">${name}</a><br><small>${date}</small>`;
+          li.innerHTML = `<a href="index.html?p=${encodeURIComponent(name)}">${name}</a><br><small>${date}</small>`;
           ul.appendChild(li);
         });
       } catch (err) {
