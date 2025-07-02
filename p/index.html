@@ -140,6 +140,28 @@
     }
 
     /* 返回顶部按钮 */
+    #toc-toggle {
+      position: fixed;
+      bottom: 20px;
+      right: 80px;  /* 与返回顶部按钮水平对齐 */
+      background: #0366d6;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      padding: 8px 12px;
+      cursor: pointer;
+      display: none;
+      z-index: 1001;
+    }
+    
+    /* 移动端显示目录按钮 */
+    @media (max-width: 768px) {
+      #toc-toggle {
+        display: block;
+      }
+    }
+
     #top-btn {
       position: fixed;
       bottom: 20px;
@@ -156,6 +178,12 @@
       z-index: 1001;
     }
 
+      @media (min-width: 769px) {
+      #toc-toggle {
+        display: none;  /* 在桌面端隐藏 */
+      }
+    }
+    
     /* 移动端样式 */
     @media (max-width: 768px) {
       header#site-header nav {
