@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="zh">
 <head>
@@ -12,7 +13,7 @@
   <!-- Mermaid / MathJax -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script>
-    window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] }, svg: { fontCache: 'global' } };
+    window.MathJax = { tex: { inlineMath: [['$', '$'], ['\(', '\)']] }, svg: { fontCache: 'global' } };
   </script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
   <script type="module">
@@ -21,14 +22,16 @@
     window.mermaid = mermaid;
   </script>
 
-  <!-- 自定义核心样式 -->
   <style>
     * { box-sizing: border-box; }
-    body {
-      background: #f6f8fa;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    html, body {
       margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f6f8fa;
+      overflow-x: hidden;
     }
+
     header {
       background: #fff;
       border-bottom: 1px solid #d0d7de;
@@ -38,6 +41,7 @@
       top: 0;
       z-index: 1000;
     }
+
     header nav {
       max-width: 980px;
       margin: 0 auto;
@@ -45,50 +49,54 @@
       justify-content: space-between;
       align-items: center;
     }
+
     header nav .links a {
       margin-right: 1rem;
       color: #0969da;
       text-decoration: none;
       font-weight: 500;
     }
+
+    #toc-toggle {
+      display: none;
+      background: #f6f8fa;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      padding: 4px 10px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
     .container {
       max-width: 980px;
-      margin: 5rem auto 2rem;
+      margin: 4.5rem auto 2rem;
       display: grid;
-      grid-template-columns: 15rem 1fr 15rem;
+      grid-template-columns: 20rem 1fr 20rem;
       gap: 1rem;
     }
+
     aside, main {
       background: #fff;
       border: 1px solid #d8dee4;
       border-radius: 6px;
       padding: 1rem;
+      overflow-x: hidden;
     }
+
     article.markdown-body {
       word-break: break-word;
     }
-    .mermaid {
-      background: #fff;
-      padding: 1em;
-      margin-bottom: 1em;
-    }
-    #archive-list ul, #toc-list ul {
+
+    #toc ul, #archive-list ul {
       list-style: none;
-      padding-left: 0.8rem;
-      margin: 0;
-    }
-    #archive-list li, #toc-list li {
-      margin: 0.25rem 0;
-      font-size: 0.9rem;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-    #toc-toggle {
-      display: none;
+      padding-left: 1rem;
     }
 
-    /* 返回顶部按钮 */
+    #toc li, #archive-list li {
+      margin: 0.25rem 0;
+      font-size: 0.9rem;
+    }
+
     #top-btn {
       position: fixed;
       bottom: 20px;
@@ -104,13 +112,13 @@
       z-index: 1001;
     }
 
-    /* ✅ 移动端响应式 */
     @media (max-width: 768px) {
       .container {
         grid-template-columns: 1fr;
         padding: 0 1rem;
       }
-      aside#toc {
+
+      #toc {
         display: none;
         position: fixed;
         top: 3.5rem;
@@ -123,21 +131,19 @@
         border-top: 1px solid #d8dee4;
         border-bottom: 1px solid #d8dee4;
       }
-      aside#toc.mobile-visible {
+
+      #toc.mobile-visible {
         display: block;
       }
+
       #toc-toggle {
         display: inline-block;
-        background: #f6f8fa;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        padding: 4px 10px;
-        font-size: 14px;
-        cursor: pointer;
       }
+
       aside#related {
         order: 2;
       }
+
       main {
         order: 1;
       }
@@ -145,57 +151,36 @@
   </style>
 </head>
 <body>
-  <!-- 顶部导航 -->
   <header>
     <nav>
       <div class="links">
-        <a href="../index.html">🏠 Home</a>
-        <a href="../about.html">ℹ️ 关于</a>
+        <a href="#">🏠 Home</a>
+        <a href="#">📚 博客</a>
+        <a href="#">ℹ️ 关于</a>
       </div>
       <button id="toc-toggle">📑 目录</button>
     </nav>
   </header>
 
-  <!-- 三栏容器 -->
   <div class="container">
-    <!-- 左侧目录 -->
-    <aside id="toc">
-      <h2>目录</h2>
-      <ul id="toc-list"></ul>
-    </aside>
-
-    <!-- 主内容区 -->
-    <main>
-      <article id="output" class="markdown-body"></article>
-    </main>
-
-    <!-- 右侧归档 -->
-    <aside id="related">
-      <h2>归档</h2>
-      <div id="archive-list">加载中...</div>
-    </aside>
+    <aside id="toc"><h2>目录</h2><ul id="toc-list"></ul></aside>
+    <main><article id="output" class="markdown-body"></article></main>
+    <aside id="related"><h2>归档</h2><div id="archive-list"></div></aside>
   </div>
 
-  <!-- 返回顶部按钮 -->
   <button id="top-btn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">↑ 返回顶部</button>
 
-  <!-- 脚本逻辑 -->
   <script>
     const params = new URLSearchParams(location.search);
     const filename = decodeURIComponent(params.get("p") || "init.md");
 
     async function renderMarkdownFromFile(filePath) {
-      const res = await fetch("./" + filePath);
-      if (!res.ok) {
-        document.getElementById("output").innerHTML = `<p style="color:red;">加载失败: ${filePath}</p>`;
-        return;
-      }
-
+      const res = await fetch(filePath);
       const raw = await res.text();
       const mermaidRegex = /```mermaid\n([\s\S]*?)```/g;
-      let mermaidBlocks = [];
-      let preprocessed = raw.replace(mermaidRegex, (_, code) => {
-        const id = `mermaid-${mermaidBlocks.length}`;
+      let mermaidBlocks = [], count = 0;
+      const preprocessed = raw.replace(mermaidRegex, (_, code) => {
+        const id = `mermaid-${count++}`;
         mermaidBlocks.push({ id, code });
         return `<div class="mermaid" id="${id}">${code}</div>`;
       });
@@ -203,41 +188,39 @@
       const output = document.getElementById("output");
       output.innerHTML = marked.parse(preprocessed);
       const headers = output.querySelectorAll("h1, h2, h3");
-      buildToc(headers);
+      buildTocTree(headers);
       setupTocActive(headers);
-
       for (let block of mermaidBlocks) {
-        try {
-          await mermaid.run({ nodes: [document.getElementById(block.id)] });
-        } catch (e) {
-          console.error("Mermaid 渲染失败:", e);
-        }
+        await mermaid.run({ nodes: [document.getElementById(block.id)] });
       }
-
       MathJax.typesetPromise();
     }
 
-    function buildToc(headers) {
-      const toc = document.getElementById("toc-list");
-      toc.innerHTML = "";
-      headers.forEach((h, i) => {
+    function buildTocTree(headers) {
+      const container = document.getElementById("toc-list");
+      container.innerHTML = "";
+      let stack = [{ level: 0, ul: container }];
+      headers.forEach((header, i) => {
+        const level = parseInt(header.tagName[1]);
         const id = `heading-${i}`;
-        h.id = id;
+        header.id = id;
         const li = document.createElement("li");
-        li.innerHTML = `<a href="#${id}">${h.innerText}</a>`;
-        toc.appendChild(li);
+        li.innerHTML = `<a href="#${id}">${header.innerText}</a>`;
+        while (stack.length > 0 && stack[stack.length - 1].level >= level) stack.pop();
+        let parentUl = stack[stack.length - 1].ul;
+        let ul = document.createElement("ul");
+        li.appendChild(ul);
+        parentUl.appendChild(li);
+        stack.push({ level, ul });
       });
     }
 
     function setupTocActive(headers) {
       const tocLinks = Array.from(document.querySelectorAll("#toc a"));
-      const map = tocLinks.map(link => {
-        const id = link.getAttribute("href").slice(1);
-        return [document.getElementById(id), link];
-      });
+      const headerMap = tocLinks.map(link => [document.getElementById(link.getAttribute("href").slice(1)), link]);
       window.addEventListener("scroll", () => {
         let current = null;
-        for (const [header, link] of map) {
+        for (const [header, link] of headerMap) {
           const top = header.getBoundingClientRect().top;
           if (top < 100) current = link;
         }
@@ -251,19 +234,17 @@
         const res = await fetch("../list.json");
         const list = await res.json();
         const groups = {};
-        list.forEach(([name, date]) => {
-          const month = date.slice(0, 7);
+        list.forEach(([name, time]) => {
+          const month = time.slice(0, 7);
           if (!groups[month]) groups[month] = [];
           groups[month].push(name);
         });
-
         const container = document.getElementById("archive-list");
         container.innerHTML = "";
         Object.entries(groups).reverse().forEach(([month, files]) => {
           const group = document.createElement("div");
           const title = document.createElement("div");
           title.textContent = `📁 ${month}`;
-          title.style.fontWeight = "bold";
           const ul = document.createElement("ul");
           files.forEach(name => {
             const li = document.createElement("li");
@@ -274,22 +255,19 @@
           group.appendChild(ul);
           container.appendChild(group);
         });
-      } catch (e) {
-        document.getElementById("archive-list").innerHTML = `<p>加载归档失败</p>`;
+      } catch {
+        document.getElementById("archive-list").innerHTML = `<p>加载失败</p>`;
       }
     }
 
-    // 返回顶部按钮显示逻辑
-    window.addEventListener("scroll", () => {
-      document.getElementById("top-btn").style.display = window.scrollY > 300 ? "block" : "none";
-    });
-
-    // 移动端目录切换
     document.getElementById("toc-toggle").addEventListener("click", () => {
       document.getElementById("toc").classList.toggle("mobile-visible");
     });
 
-    // 初始化渲染
+    window.addEventListener("scroll", () => {
+      document.getElementById("top-btn").style.display = window.scrollY > 300 ? "block" : "none";
+    });
+
     renderMarkdownFromFile(filename);
     loadArchiveList();
   </script>
