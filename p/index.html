@@ -89,8 +89,8 @@
 
   <script>
     const params = new URLSearchParams(location.search);
-    const filename = params.get("p") || "test.md";  // 默认文件
-    const filepath = filename.includes("/") ? filename : `p/${filename}`;
+    const filename = params.get("p") || "index.md";  // 默认文件
+    const filepath = filename;
 
     async function renderMarkdownFromFile(filePath) {
       const res = await fetch(filePath);
