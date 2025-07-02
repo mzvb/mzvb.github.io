@@ -29,57 +29,83 @@
       margin: 0;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       display: flex;
-      flex-direction: row;
+      flex-wrap: nowrap;
       min-height: 100vh;
+      background: #f9f9f9;
     }
+
     aside, main {
       padding: 1rem;
       overflow-y: auto;
     }
+
+    /* 卡片样式 */
     #toc, #related {
-      width: 250px;
-      background: #f7f7f7;
-      border-right: 1px solid #ddd;
+      width: 17%;
+      min-width: 200px;
+      max-width: 260px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 0 6px rgba(0,0,0,0.1);
+      margin: 1rem;
+      height: fit-content;
+      max-height: calc(100vh - 2rem);
+      display: flex;
+      flex-direction: column;
     }
-    #related {
-      border-right: none;
-      border-left: 1px solid #ddd;
-    }
+
     #main {
-      flex: 1;
+      flex: 1 1 66%;
       padding: 1rem 2rem;
     }
+
     .markdown-body {
-      max-width: 800px;
+      max-width: 100%;
     }
+
     .mermaid {
       background: white;
       padding: 1em;
       margin-bottom: 1em;
     }
+
     h2 {
       font-size: 1.1rem;
       margin-top: 0;
     }
+
     ul {
       list-style: none;
       padding-left: 0;
     }
+
     li {
       margin: 0.3rem 0;
     }
+
     a {
       text-decoration: none;
       color: #0366d6;
     }
+
     a:hover {
       text-decoration: underline;
     }
+
+    /* 树状 TOC 缩进 */
     #toc ul ul {
       margin-left: 1em;
       border-left: 1px dotted #ccc;
       padding-left: 0.5em;
     }
+
+    /* 文章列表中文件名省略 */
+    #related li {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
     .home-link {
       display: block;
       margin-bottom: 1rem;
@@ -87,15 +113,31 @@
       font-size: 0.95rem;
     }
 
-    /* 响应式布局 */
+    /* 返回顶部按钮 */
+    #top-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 8px 12px;
+      background: #0366d6;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      display: none;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+
+    /* 响应式 */
     @media (max-width: 768px) {
       body {
         flex-direction: column;
       }
       #toc, #related {
-        width: 100%;
-        border: none;
-        border-top: 1px solid #ddd;
+        width: auto;
+        max-width: 100%;
+        margin: 1rem;
       }
       #main {
         padding: 1rem;
@@ -119,6 +161,9 @@
     <ul id="related-list"></ul>
   </aside>
 
+  <!-- 返回顶部按钮 -->
+  <button id="top-btn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">↑ 返回顶部</button>
+
   <script>
     const params = new URLSearchParams(location.search);
     const filename = decodeURIComponent(params.get("p") || "test.md");
@@ -132,7 +177,6 @@
       }
 
       const raw = await res.text();
-
       const mermaidRegex = /```mermaid\n([\s\S]*?)```/g;
       let mermaidBlocks = [];
       let preprocessed = raw.replace(mermaidRegex, (_, code) => {
@@ -176,7 +220,6 @@
         }
 
         let parentUl = stack[stack.length - 1].ul;
-
         let ul = document.createElement("ul");
         li.appendChild(ul);
         parentUl.appendChild(li);
@@ -190,7 +233,6 @@
         const res = await fetch("../list.json");
         let list = await res.json();
         list = list.slice(0, 10);
-
         const ul = document.getElementById("related-list");
         ul.innerHTML = "";
 
@@ -203,6 +245,16 @@
         document.getElementById("related-list").innerHTML = `<li>无法加载文章列表</li>`;
       }
     }
+
+    // 显示返回顶部按钮
+    window.addEventListener("scroll", () => {
+      const btn = document.getElementById("top-btn");
+      if (window.scrollY > 300) {
+        btn.style.display = "block";
+      } else {
+        btn.style.display = "none";
+      }
+    });
 
     renderMarkdownFromFile(filepath);
     loadRelatedList();
